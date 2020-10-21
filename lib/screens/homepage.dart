@@ -1,3 +1,4 @@
+import 'package:app/screens/taskpage.dart';
 import 'package:app/widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +16,7 @@ class _HomepageState extends State<Homepage> {
           width: double.infinity,
           padding: EdgeInsets.symmetric(
             horizontal: 24.0,
-            vertical: 32.0,
+            // vertical: 32.0,
           ),
           color: Color(0xFFF6F6F6),
           child : Stack(
@@ -25,6 +26,7 @@ class _HomepageState extends State<Homepage> {
                 children: [
                   Container(
                     margin: EdgeInsets.only(
+                      top: 32.0,
                       bottom: 32.0
                     ),
                   ),
@@ -33,28 +35,46 @@ class _HomepageState extends State<Homepage> {
                     'assets/images/logo.png'
                   ),
                   ),
-                  TaskCardWidget(
-                    title: "Get Started !! ",
-                    desc: "Hello User ! , Welcome to Todo App",
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        TaskCardWidget(
+                          title: "Get Started !! ",
+                          desc: "Hello User ! , Welcome to Todo App",
+                        ),
+                        TaskCardWidget(),
+                        TaskCardWidget(),
+                        TaskCardWidget(),
+                        TaskCardWidget(),
+                      ],
+                    ),
                   ),
-                  TaskCardWidget(),
 
                 ]
               ),
               Positioned (
-                bottom: 0.0,
+                bottom: 32.0,
                 right: 0.0,
-                child: Container(
-                  width: 60.0,
-                  height: 60.0,
-                  decoration: BoxDecoration(
-                    color: Color(0xFF7349FE),
-                    borderRadius: BorderRadius.circular(80.0), 
-                  ),
-                  child: Image(
-                    image: AssetImage(
-                      "assets/images/add_icon.png",
-                    )
+                child: GestureDetector(
+                  onTap: (){
+                    Navigator.push(context,
+                      MaterialPageRoute(
+                        builder: (context) => Taskpage(),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: 60.0,
+                    height: 60.0,
+                    decoration: BoxDecoration(
+                      color: Color(0xFF7349FE),
+                      borderRadius: BorderRadius.circular(80.0), 
+                    ),
+                    child: Image(
+                      image: AssetImage(
+                        "assets/images/add_icon.png",
+                      )
+                    ),
                   ),
                 ),
               ),
