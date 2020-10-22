@@ -1,3 +1,4 @@
+import 'package:app/database_helper.dart';
 import 'package:app/screens/taskpage.dart';
 import 'package:app/widgets.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+  DatabaseHelper _dbHelper = DatabaseHelper();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,20 +38,22 @@ class _HomepageState extends State<Homepage> {
                   ),
                   ),
                   Expanded(
-                    child: ScrollConfiguration(
-                      behavior: NoGlowBehaviour(),
-                      child: ListView(
-                        children: [
-                          TaskCardWidget(
-                            title: "Get Started !! ",
-                            desc: "Hello User ! , Welcome to Todo App",
+                    child: FutureBuilder(
+                      initialData: [],
+                      future: _dbHelper.getTasks(),
+                      builder: (context, snapshot){
+                        return ScrollConfiguration(
+                          behavior: NoGlowBehaviour(),
+                          child: ListView.builder(
+                            itemCount: snapshot.data.length,
+                            itemBuilder: (context, index){
+                                return TaskCardWidget(
+                                  title: snapshot.data[index].title,
+                                );
+                            },
                           ),
-                          TaskCardWidget(),
-                          TaskCardWidget(),
-                          TaskCardWidget(),
-                          TaskCardWidget(),
-                        ],
-                      ),
+                        );
+                      },
                     ),
                   ),
 
@@ -62,9 +66,13 @@ class _HomepageState extends State<Homepage> {
                   onTap: (){
                     Navigator.push(context,
                       MaterialPageRoute(
-                        builder: (context) => Taskpage(),
+                        builder: (context) => Taskpage()
                       ),
-                    );
+                    ).then((value){
+                        setState(() {
+                          
+                        });
+                      });
                   },
                   child: Container(
                     width: 60.0,
