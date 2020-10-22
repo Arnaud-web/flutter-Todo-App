@@ -36,17 +36,20 @@ class _HomepageState extends State<Homepage> {
                   ),
                   ),
                   Expanded(
-                    child: ListView(
-                      children: [
-                        TaskCardWidget(
-                          title: "Get Started !! ",
-                          desc: "Hello User ! , Welcome to Todo App",
-                        ),
-                        TaskCardWidget(),
-                        TaskCardWidget(),
-                        TaskCardWidget(),
-                        TaskCardWidget(),
-                      ],
+                    child: ScrollConfiguration(
+                      behavior: NoGlowBehaviour(),
+                      child: ListView(
+                        children: [
+                          TaskCardWidget(
+                            title: "Get Started !! ",
+                            desc: "Hello User ! , Welcome to Todo App",
+                          ),
+                          TaskCardWidget(),
+                          TaskCardWidget(),
+                          TaskCardWidget(),
+                          TaskCardWidget(),
+                        ],
+                      ),
                     ),
                   ),
 
@@ -67,7 +70,11 @@ class _HomepageState extends State<Homepage> {
                     width: 60.0,
                     height: 60.0,
                     decoration: BoxDecoration(
-                      color: Color(0xFF7349FE),
+                      gradient: LinearGradient(
+                        colors: [Color(0xFF7349FE),Color(0xFF3900F5)],
+                        begin: Alignment (0,-1),
+                        end: Alignment (0,1),
+                      ),
                       borderRadius: BorderRadius.circular(80.0), 
                     ),
                     child: Image(
