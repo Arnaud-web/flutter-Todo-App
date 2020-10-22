@@ -16,6 +16,7 @@ class _TaskpageState extends State<Taskpage> {
   int _taskId = 0;
   String _taskTitle = "";
   String _taskDescription = "";
+  // String _todoText = "";
 
   FocusNode _titleFocus;
   FocusNode _descriptionFocus;
@@ -121,10 +122,12 @@ class _TaskpageState extends State<Taskpage> {
                       ),
                       child: TextField(
                         focusNode: _descriptionFocus,
-                        onSubmitted: (value) {
+                        onSubmitted: (value) async {
                           if (value != "") {
                             if (_taskId != 0) {
-                              _dbHelper.updateTaskDescription(_taskId, value);
+                              await _dbHelper.updateTaskDescription(
+                                  _taskId, value);
+                              _taskDescription = value;
                             }
                           }
                           _todoFocus.requestFocus();
@@ -152,12 +155,12 @@ class _TaskpageState extends State<Taskpage> {
                                 return GestureDetector(
                                   onTap: () async {
                                     // print("ok");
-                                    if (snapshot.data.isDone == 0) {
+                                    if (snapshot.data[index].isDone == 0) {
                                       await _dbHelper.updateTodoDone(
-                                          snapshot.data.id, 0);
+                                          snapshot.data[index].id, 1);
                                     } else {
                                       await _dbHelper.updateTodoDone(
-                                          snapshot.data.id, 1);
+                                          snapshot.data[index].id, 0);
                                     }
                                     setState(() {});
                                     print(
@@ -209,16 +212,17 @@ class _TaskpageState extends State<Taskpage> {
                                   focusNode: _todoFocus,
                                   onSubmitted: (value) async {
                                     if (value != "") {
-                                      if (widget.task != null) {
+                                      if (_taskId != null) {
                                         DatabaseHelper _dbHelper =
                                             DatabaseHelper();
                                         Todo _newTodo = Todo(
                                           title: value,
                                           isDone: 0,
-                                          taskId: widget.task.id,
+                                          taskId: _taskId,
                                         );
                                         await _dbHelper.insertTodo(_newTodo);
                                         setState(() {});
+                                        _todoFocus.requestFocus();
                                         print("New todo has been created");
                                       } else {
                                         print("Update existing todo");
@@ -245,15 +249,9 @@ class _TaskpageState extends State<Taskpage> {
                   bottom: 32.0,
                   right: 24.0,
                   child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Taskpage(
-                            task: null,
-                          ),
-                        ),
-                      );
+                    onTap: () async {
+                      await _dbHelper.deleteTask(_taskId);
+                      Navigator.pop(context);
                     },
                     child: Container(
                       width: 60.0,
