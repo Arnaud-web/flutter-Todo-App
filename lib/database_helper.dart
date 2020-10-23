@@ -56,7 +56,7 @@ class DatabaseHelper {
 
   Future<List<Task>> getTasks() async {
     Database _db = await database();
-    List<Map<String, dynamic>> taskMap = await _db.query('tasks');
+    List<Map<String, dynamic>> taskMap = await _db.rawQuery("SELECT * FROM tasks ORDER by id DESC");
     return List.generate(taskMap.length, (index) {
       return Task(
           id: taskMap[index]['id'],
