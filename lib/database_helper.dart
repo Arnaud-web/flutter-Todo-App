@@ -16,7 +16,7 @@ class DatabaseHelper {
           " CREATE TABLE tasks (id INTEGER PRIMARY KEY, title TEXT, description TEXT) ",
         );
         await db.execute(
-          " CREATE TABLE todo (id INTEGER PRIMARY KEY,taskId INTEGER ,title TEXT, isDone INTEGER) ",
+          " CREATE TABLE todo (id INTEGER PRIMARY KEY,taskId INTEGER ,title TEXT, isDone INTEGER, prix INTEGER) ",
         );
 
         return db;
@@ -66,15 +66,19 @@ class DatabaseHelper {
   }
 
   Future<List<Todo>> getTodo(int taskId) async {
+    var _total = 0;
     Database _db = await database();
     List<Map<String, dynamic>> todoMap =
         await _db.rawQuery("SELECT * FROM todo WHERE taskId =$taskId");
     return List.generate(todoMap.length, (index) {
+      _total = _total + todoMap[index]['prix'];
       return Todo(
           id: todoMap[index]['id'],
           taskId: todoMap[index]['taskId'],
           title: todoMap[index]['title'],
+          prix: todoMap[index]['prix'],
           isDone: todoMap[index]['isDone']);
+
     });
   }
 
@@ -82,11 +86,19 @@ class DatabaseHelper {
     Database _db = await database();
     await _db.rawUpdate("UPDATE todo SET isDone = '$isDone' WHERE id  = '$id'");
   }
-
+  Future<void> updateTodoPrix(int id, int prix) async {
+    Database _db = await database();
+    await _db.rawUpdate("UPDATE todo SET prix = '$prix' WHERE id  = '$id'");
+  }
+ 
   Future<void> deleteTask(int id) async {
     Database _db = await database();
     await _db.rawDelete("DELETE FROM tasks  WHERE id  = '$id'");
     await _db.rawDelete("DELETE FROM todo  WHERE taskId  = '$id'");
 
   }
+ 
+
 }
+
+

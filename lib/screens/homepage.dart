@@ -31,6 +31,8 @@ class _HomepageState extends State<Homepage> {
                   Row(
                     children: [
                       Image(
+                        width: 150,
+                        // color: Colors.grey,
                         image: AssetImage('assets/images/logo.png'),
                       ),
                       Padding(
@@ -38,11 +40,11 @@ class _HomepageState extends State<Homepage> {
                           horizontal: 35,
                         ),
                         child: Text(
-                          "Hello !",
+                          "Hi-Tsena !",
                           style: TextStyle(
                             color: Color(0xFF211551),
                             fontSize: 22.0,
-                            fontWeight: FontWeight.w300,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),

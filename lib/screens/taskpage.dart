@@ -1,3 +1,4 @@
+
 import 'package:app/database_helper.dart';
 import 'package:app/models/task.dart';
 import 'package:app/models/todo.dart';
@@ -17,10 +18,11 @@ class _TaskpageState extends State<Taskpage> {
   String _taskTitle = "";
   String _taskDescription = "";
   // String _todoText = "";
-
+  int _totalPrix;
   FocusNode _titleFocus;
   FocusNode _descriptionFocus;
   FocusNode _todoFocus;
+  FocusNode _todoPrixFocus;
 
   bool _contentVisible = false;
 
@@ -31,12 +33,14 @@ class _TaskpageState extends State<Taskpage> {
       _taskTitle = widget.task.title;
       _taskDescription = widget.task.description;
       _taskId = widget.task.id;
+      _totalPrix = 0;
       print("ID ${widget.task.id}");
     }
 
     _titleFocus = FocusNode();
     _descriptionFocus = FocusNode();
     _todoFocus = FocusNode();
+    _todoPrixFocus = FocusNode();
 
     super.initState();
   }
@@ -148,29 +152,97 @@ class _TaskpageState extends State<Taskpage> {
                       initialData: [],
                       future: _dbHelper.getTodo(_taskId),
                       builder: (context, snapshot) {
+                        _totalPrix = 0;
                         return Expanded(
                           child: ListView.builder(
                               itemCount: snapshot.data.length,
                               itemBuilder: (context, index) {
-                                return GestureDetector(
-                                  onTap: () async {
-                                    // print("ok");
-                                    if (snapshot.data[index].isDone == 0) {
-                                      await _dbHelper.updateTodoDone(
-                                          snapshot.data[index].id, 1);
-                                    } else {
-                                      await _dbHelper.updateTodoDone(
-                                          snapshot.data[index].id, 0);
-                                    }
-                                    setState(() {});
-                                    print(
-                                        "todo Done:  ${snapshot.data[index].isDone}");
-                                  },
-                                  child: TodoWidget(
-                                    text: snapshot.data[index].title,
-                                    isDone: snapshot.data[index].isDone == 0
-                                        ? false
-                                        : true,
+                                _totalPrix =
+                                    _totalPrix + snapshot.data[index].prix;
+                                print("========> $_totalPrix");
+                                return Container(
+                                  margin: EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.transparent,
+                                    borderRadius: BorderRadius.circular(5),
+                                    border: Border.all(
+                                      color: Colors.grey,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () async {
+                                          if (snapshot.data[index].isDone ==
+                                              0) {
+                                            await _dbHelper.updateTodoDone(
+                                                snapshot.data[index].id, 1);
+                                          } else {
+                                            await _dbHelper.updateTodoDone(
+                                                snapshot.data[index].id, 0);
+                                          }
+                                          setState(() {
+                                            _totalPrix = 0;
+                                          });
+                                          print(
+                                              "todo Done:  ${snapshot.data[index].isDone}");
+                                        },
+                                        child: TodoWidget(
+                                          text: snapshot.data[index].title,
+                                          isDone:
+                                              snapshot.data[index].isDone == 0
+                                                  ? false
+                                                  : true,
+                                          prix: snapshot.data[index].prix,
+                                          id: snapshot.data[index].id,
+                                          total: _totalPrix,
+                                        ),
+                                      ),
+                                      Container(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 40,
+                                          ),
+                                          child: Center(
+                                            child: TextField(
+                                              // focusNode: _todoPrixFocus,
+                                              onSubmitted: (value) async {
+                                                if (value != "") {
+                                                  await _dbHelper
+                                                      .updateTodoPrix(
+                                                          snapshot
+                                                              .data[index].id,
+                                                          int.parse(value));
+                                                  setState(() {});
+                                                  // _todoPrixFocus.requestFocus();
+                                                  print(
+                                                      "prix update : $value");
+                                                }
+                                              },
+                                              decoration: InputDecoration(
+                                                hintText:
+                                                    "${snapshot.data[index].prix} Ar",
+                                                border: InputBorder.none,
+                                              ),
+                                              style: TextStyle(
+                                                fontSize: 18.0,
+                                                fontWeight: FontWeight.bold,
+                                                color: Color(0XFF211551),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Text(
+                                        "Total : $_totalPrix Ar",
+                                        style: TextStyle(
+                                          fontSize: 15.0,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0XFF211551),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 );
                               }),
@@ -209,7 +281,8 @@ class _TaskpageState extends State<Taskpage> {
                               ),
                               Expanded(
                                 child: TextField(
-                                  focusNode: _todoFocus,
+                                  controller: TextEditingController()..text = "",
+                                  // focusNode: _todoFocus,
                                   onSubmitted: (value) async {
                                     if (value != "") {
                                       if (_taskId != null) {
@@ -218,11 +291,14 @@ class _TaskpageState extends State<Taskpage> {
                                         Todo _newTodo = Todo(
                                           title: value,
                                           isDone: 0,
+                                          prix: 0,
                                           taskId: _taskId,
                                         );
                                         await _dbHelper.insertTodo(_newTodo);
+                                        
+                                        // value = "";
                                         setState(() {});
-                                        _todoFocus.requestFocus();
+                                        // _todoFocus.requestFocus();
                                         print("New todo has been created");
                                       } else {
                                         print("Update existing todo");
@@ -230,7 +306,7 @@ class _TaskpageState extends State<Taskpage> {
                                     }
                                   },
                                   decoration: InputDecoration(
-                                    hintText: "inter todo item",
+                                    hintText: "New todo item",
                                     border: InputBorder.none,
                                   ),
                                 ),

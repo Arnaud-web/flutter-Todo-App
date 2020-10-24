@@ -1,4 +1,6 @@
+import 'package:app/database_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class TaskCardWidget extends StatelessWidget {
   final String title;
@@ -43,9 +45,15 @@ class TaskCardWidget extends StatelessWidget {
 }
 
 class TodoWidget extends StatelessWidget {
+  DatabaseHelper _dbHelper = DatabaseHelper();
   final String text;
   final bool isDone;
-  TodoWidget({this.text, @required this.isDone});
+  final int prix;
+  final int id;
+  int total;
+  TodoWidget(
+      {this.text, @required this.isDone, this.prix, this.id, this.total});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -75,12 +83,13 @@ class TodoWidget extends StatelessWidget {
               image: AssetImage('assets/images/check_icon.png'),
             ),
           ),
+          
           Flexible(
             child: Text(
               text ?? ("Todo Widget"),
               style: TextStyle(
-                color: isDone ? Color(0xFF211551) : Colors.grey,
-                fontSize: 16,
+                color: isDone ? Color(0xFF211551) : Color(0xFF340DCE),
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
